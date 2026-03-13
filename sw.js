@@ -1,8 +1,8 @@
-const CACHE_NAME = "dashboard-dpk-v1";
+const CACHE_NAME = "dpk-dashboard-v2";
 
 const urlsToCache = [
-  "/",
-  "/index.html"
+  "./",
+  "./index.html"
 ];
 
 self.addEventListener("install", event => {
@@ -15,6 +15,8 @@ self.addEventListener("install", event => {
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request)
-      .then(response => response || fetch(event.request))
+      .then(response => {
+        return response || fetch(event.request);
+      })
   );
 });
