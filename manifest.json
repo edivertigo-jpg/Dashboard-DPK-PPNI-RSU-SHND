@@ -1,0 +1,21 @@
+{
+"name": "Dashboard DPK PPNI",
+"short_name": "DPK Dashboard",
+"start_url": "index.html",
+"display": "standalone",
+"background_color": "#B71C1C",
+"theme_color": "#B71C1C",
+"orientation": "portrait",
+"icons": [
+{
+"src": "icon-192.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "icon-512.png",
+"sizes": "512x512",
+"type": "image/png"
+}
+]
+}
