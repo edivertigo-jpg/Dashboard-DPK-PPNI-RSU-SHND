@@ -15,60 +15,15 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="DPK PPNI">
 <script>
-// ── Service Worker ──
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(r=>console.log('SW registered'))
-      .catch(e=>console.log('SW error',e));
+// Register Service Worker (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[PWA] SW registered:', reg.scope))
+      .catch(err => console.warn('[PWA] SW failed:', err));
   });
 }
 
-// ── PWA Install Prompt ──
-let _deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  _deferredPrompt = e;
-  // Tampilkan banner install setelah 1.5 detik
-  setTimeout(showInstallBanner, 1500);
-});
-
-window.addEventListener('appinstalled', () => {
-  _deferredPrompt = null;
-  hideInstallBanner();
-  console.log('PWA installed!');
-});
-
-function showInstallBanner() {
-  if (!_deferredPrompt) return;
-  // Cek apakah sudah pernah dismiss
-  if (sessionStorage.getItem('pwa-dismissed')) return;
-  const banner = document.getElementById('pwa-install-banner');
-  if (banner) banner.style.display = 'flex';
-}
-
-function hideInstallBanner() {
-  const banner = document.getElementById('pwa-install-banner');
-  if (banner) banner.style.display = 'none';
-}
-
-function triggerInstall() {
-  if (!_deferredPrompt) return;
-  _deferredPrompt.prompt();
-  _deferredPrompt.userChoice.then(result => {
-    if (result.outcome === 'accepted') {
-      console.log('PWA accepted');
-    }
-    _deferredPrompt = null;
-    hideInstallBanner();
-  });
-}
-
-function dismissInstall() {
-  sessionStorage.setItem('pwa-dismissed', '1');
-  hideInstallBanner();
-}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -2132,32 +2087,5 @@ function buildRow(hmap, d) {
 
 
 
-<!-- ═══ PWA INSTALL BANNER ════════════════════════════════ -->
-<div id="pwa-install-banner" style="
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
-  background:linear-gradient(135deg,#B71C1C,#8B0000);
-  color:#fff;padding:14px 16px;
-  display:none;align-items:center;gap:12px;
-  box-shadow:0 -4px 20px rgba(0,0,0,.25);
-  font-family:'Plus Jakarta Sans',sans-serif;
-">
-  <img src="icon-192.png" style="width:44px;height:44px;border-radius:10px;flex-shrink:0" onerror="this.style.display='none'">
-  <div style="flex:1;min-width:0">
-    <div style="font-weight:800;font-size:13px">DPK PPNI SHND</div>
-    <div style="font-size:11px;opacity:.85;margin-top:2px">Install app untuk akses cepat dari homescreen</div>
-  </div>
-  <button onclick="triggerInstall()" style="
-    background:#fff;color:#B71C1C;border:none;
-    padding:8px 16px;border-radius:8px;
-    font-weight:800;font-size:12px;cursor:pointer;
-    white-space:nowrap;flex-shrink:0
-  ">⬇️ Install</button>
-  <button onclick="dismissInstall()" style="
-    background:rgba(255,255,255,.2);color:#fff;border:none;
-    width:30px;height:30px;border-radius:50%;
-    font-size:16px;cursor:pointer;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center
-  ">✕</button>
-</div>
 </body>
 </html>
