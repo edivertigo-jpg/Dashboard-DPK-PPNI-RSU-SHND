@@ -1266,9 +1266,10 @@ function openDetail(idx) {
 // ═══════════════════════════════════════════════════════════
 function confirmDelete(idx) {
   const r = allData[idx];
-  document.getElementById('confirmMsg').textContent = `Hapus data "${r?.nama || 'ini'}"?`;
+  if (!r) return;
+  document.getElementById('confirmMsg').textContent = `Hapus data "${r.nama || 'ini'}"?`;
   document.getElementById('confirmSub').textContent = 'Data akan dihapus dari Google Sheets. Tidak dapat dibatalkan.';
-  document.getElementById('confirmOkBtn').onclick = () => doDelete(no);
+  document.getElementById('confirmOkBtn').onclick = () => doDelete(r.no);
   closeModal('modalDetail');
   openModal('modalConfirm');
 }
