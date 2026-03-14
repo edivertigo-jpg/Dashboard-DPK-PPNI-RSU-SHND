@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard DPK PPNI RSU SHND 2026</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B71C1C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DPK PPNI">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js')
+      .then(r=>console.log('SW registered'))
+      .catch(e=>console.log('SW error',e));
+  });
+}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -222,22 +237,37 @@ td.mono{font-family:var(--mono);font-size:10px;color:#5a7a95}
 .progress-bar{height:4px;background:#d1dce8;border-radius:2px;overflow:hidden;margin-top:8px}
 .progress-fill{height:100%;background:linear-gradient(90deg,#B71C1C,#C41E3A);border-radius:2px;transition:width .3s;width:0%}
 
+/* ── hide-mobile utility ── */
+.hide-mobile{display:inline-flex}
+
 @media(max-width:640px){
+  /* Form & detail */
   .form-grid{grid-template-columns:1fr}.fg.span2{grid-column:span 1}
   .detail-grid{grid-template-columns:1fr}
-  .brand p{display:none}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .hdr{height:auto;flex-wrap:wrap;padding:8px 12px;gap:8px}
-  .brand h1{font-size:11px}
-  .hdr-right{width:100%;justify-content:flex-end;gap:5px}
+  /* Header 2 baris */
+  .hdr{height:auto;flex-wrap:wrap;padding:8px 12px;gap:6px;align-items:center}
+  .brand{flex:1;min-width:0}
+  .brand p,.subtitle-dash{display:none}
+  .brand h1{font-size:11px!important;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hdr-right{width:100%;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+  /* Sembunyikan Refresh & Drive */
+  .hide-mobile{display:none!important}
+  /* Buttons lebih kecil */
   .btn{padding:6px 10px;font-size:10px}
+  .btn-violet{font-size:10px;padding:7px 11px}
   .live{font-size:9px;padding:3px 8px}
-  main{padding:12px}
-  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* Main */
+  main{padding:10px}
+  /* Stats 2 kolom */
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat-val{font-size:26px}
+  .stat-lbl{font-size:9px}
+  .stat-sub{font-size:9px}
+  /* Table scroll */
+  .scroll-x,.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .data-table{min-width:900px}
-  .stat-val{font-size:28px}
-  .subtitle-dash{display:none}
-  .brand h1{max-width:160px!important;font-size:11px!important}
+  /* Doc upload stack */
+  .doc-upload-row{grid-template-columns:1fr}
 }
 
 @keyframes shake {
@@ -267,7 +297,7 @@ td.mono{font-family:var(--mono);font-size:10px;color:#5a7a95}
     <div class="hdr-right">
     <div class="live"><div class="dot"></div><span id="liveLabel">Memuat…</span></div>
     <button class="btn btn-violet" onclick="openAdd()">＋ Tambah Perawat</button>
-    <button class="btn btn-ghost" onclick="fetchData()">🔄 Refresh</button>
+    <button class="btn btn-ghost hide-mobile" onclick="fetchData()">🔄 Refresh</button>
     <div style="position:relative;display:inline-block">
       <button class="btn btn-ghost" id="btnUltah" onclick="toggleUltahDropdown(event)" style="position:relative">
         🎂 Ulang Tahun
@@ -288,7 +318,7 @@ td.mono{font-family:var(--mono);font-size:10px;color:#5a7a95}
         </div>
       </div>
     </div>
-    <a href="https://drive.google.com/drive/folders/1ZElq_O9W91KgD6gpUy5eAm2zrdrSUiFE?usp=sharing" target="_blank" class="btn btn-ghost">📁 Drive</a>
+    <a href="https://drive.google.com/drive/folders/1ZElq_O9W91KgD6gpUy5eAm2zrdrSUiFE?usp=sharing" target="_blank" class="btn btn-ghost hide-mobile">📁 Drive</a>
   </div>
 </div>
 </header>
@@ -1013,14 +1043,20 @@ function similarityScore(a, b) {
   return 1 - dist / Math.max(m, n);
 }
 
-function cekDuplikatNama(namaBaru, rowIndexEdit) {
-  // rowIndexEdit = rowIndex yang sedang diedit (skip diri sendiri)
+function cekDuplikatNama(namaBaru, nipBaru, rowIndexEdit) {
   const threshold = 0.90;
   const mirip = [];
   allData.forEach(r => {
     if (rowIndexEdit && String(r.rowIndex) === String(rowIndexEdit)) return; // skip self
     const score = similarityScore(namaBaru, r.nama || '');
-    if (score >= threshold) mirip.push({ nama: r.nama, unit: r.unit, no: r.no, score: Math.round(score*100) });
+    const nipSama = nipBaru && nipBaru.trim() !== '' && r.nip && r.nip.trim() !== '' && nipBaru.trim() === r.nip.trim();
+    if (score >= threshold || nipSama) {
+      mirip.push({
+        nama: r.nama, unit: r.unit, no: r.no,
+        score: Math.round(score*100),
+        nipSama
+      });
+    }
   });
   return mirip;
 }
@@ -1040,11 +1076,12 @@ async function submitForm() {
   // Cek duplikat — langsung tolak jika ≥ 90% mirip
   const mode0 = document.getElementById('fMode').value;
   const rowIdx0 = document.getElementById('fRowIndex').value;
-  const mirip = cekDuplikatNama(nama, mode0 === 'edit' ? rowIdx0 : null);
+  const nipVal = document.getElementById('fNip').value.trim();
+  const mirip = cekDuplikatNama(nama, nipVal, mode0 === 'edit' ? rowIdx0 : null);
   if (mirip.length > 0) {
-    const info = mirip.map(m => `• ${m.nama} (${m.unit||'—'}, ${m.score}% mirip)`).join('\n');
-    showToast(`❌ Data sudah ada: ${mirip[0].nama}`, true);
-    alert('❌ Data tidak dapat disimpan!\n\nNama serupa sudah ada di database:\n\n' + info + '\n\nSilakan cek kembali atau gunakan fitur Edit untuk memperbarui data yang ada.');
+    const info = mirip.map(m => `• ${m.nama} (${m.unit||'—'}${m.nipSama?' · NIP sama':`, ${m.score}% mirip`})`).join('\n');
+    showToast(`❌ Data duplikat: ${mirip[0].nama}`, true);
+    alert('❌ Data tidak dapat disimpan!\n\nData serupa sudah ada:\n\n' + info + '\n\nGunakan fitur Edit untuk update data yang sudah ada.');
     return;
   }
 
@@ -1281,8 +1318,11 @@ async function doDelete(no) {
   const btn = document.getElementById('confirmOkBtn');
   btn.disabled = true; btn.textContent = '⏳ Menghapus…';
   try {
-    const json = await callAPI({ action: 'delete', no: no });
-    if (!json.success) throw new Error(json.error);
+    const url = `${API}?action=delete&no=${encodeURIComponent(no)}&_cb=${Date.now()}`;
+    const res = await fetch(url, { method:'GET', redirect:'follow', mode:'cors', cache:'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Gagal hapus');
     showToast('✅ Data berhasil dihapus');
     closeModal('modalConfirm');
     await fetchData();
