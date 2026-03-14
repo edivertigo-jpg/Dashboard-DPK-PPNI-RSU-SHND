@@ -622,7 +622,7 @@ async function fetchData() {
   try {
     const json = await callAPI({ action: 'list' });
     if (!json.success) throw new Error(json.error || 'Gagal');
-    allData = json.data;
+    allData = json.data.map((r, i) => ({ ...r, _idx: i }));
     populateUnitFilter();
     updateStats();
     applyFilters();
@@ -836,7 +836,7 @@ function renderTable() {
     return `<tr class="${expRow}">
       <td><div class="foto-cell">${avatarHtml(r.foto, '36px')}</div></td>
       <td class="mono">${r.no}</td>
-      <td class="nm"><a href="#" onclick="openDetail(${r.no});return false" style="color:inherit;text-decoration:none;cursor:pointer">${r.nama||'—'}</a></td>
+      <td class="nm"><a href="#" onclick="openDetail(${r._idx});return false" style="color:inherit;text-decoration:none;cursor:pointer">${r.nama||'—'}</a></td>
       <td style="max-width:160px;white-space:normal;font-size:11px">${r.unit||'—'}</td>
       <td class="mono">${r.nik||'—'}</td>
       <td class="mono">${r.nip||'—'}</td>
@@ -851,9 +851,9 @@ function renderTable() {
       <td>${dateB(r.rkkAkhir)}</td>
       <td>
         <div style="display:flex;gap:5px">
-          <button class="btn btn-ghost btn-icon btn-sm" onclick="openDetail(${r.no})" title="Lihat detail">👁</button>
-          <button class="btn btn-amber btn-icon btn-sm" onclick="openEdit(${r.no})" title="Edit">✏️</button>
-          <button class="btn btn-rose btn-icon btn-sm" onclick="confirmDelete(${r.no})" title="Hapus">🗑</button>
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="openDetail(${r._idx})" title="Lihat detail">👁</button>
+          <button class="btn btn-amber btn-icon btn-sm" onclick="openEdit(${r._idx})" title="Edit">✏️</button>
+          <button class="btn btn-rose btn-icon btn-sm" onclick="confirmDelete(${r._idx})" title="Hapus">🗑</button>
         </div>
       </td>
     </tr>`;
@@ -923,8 +923,8 @@ function openAdd() {
 // ═══════════════════════════════════════════════════════════
 //  MODAL: EDIT
 // ═══════════════════════════════════════════════════════════
-function openEdit(no) {
-  const r = allData.find(x => x.no === no);
+function openEdit(idx) {
+  const r = allData[idx];
   if (!r) return;
   resetForm();
   document.getElementById('formTitle').textContent = '✏️ Edit Perawat';
@@ -1155,8 +1155,8 @@ async function uploadFilePost(action, base64, mimeType, fileName, nama, prefix) 
 // ═══════════════════════════════════════════════════════════
 //  DETAIL MODAL
 // ═══════════════════════════════════════════════════════════
-function openDetail(no) {
-  const r = allData.find(x => x.no === no);
+function openDetail(idx) {
+  const r = allData[idx];
   if (!r) return;
 
   document.getElementById('detailBody').innerHTML = `
@@ -1214,8 +1214,8 @@ function openDetail(no) {
 // ═══════════════════════════════════════════════════════════
 //  DELETE
 // ═══════════════════════════════════════════════════════════
-function confirmDelete(no) {
-  const r = allData.find(x => x.no === no);
+function confirmDelete(idx) {
+  const r = allData[idx];
   document.getElementById('confirmMsg').textContent = `Hapus data "${r?.nama || 'ini'}"?`;
   document.getElementById('confirmSub').textContent = 'Data akan dihapus dari Google Sheets. Tidak dapat dibatalkan.';
   document.getElementById('confirmOkBtn').onclick = () => doDelete(no);
