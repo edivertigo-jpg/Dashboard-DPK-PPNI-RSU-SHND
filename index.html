@@ -1192,9 +1192,12 @@ function previewDoc(type, e) {
 async function uploadFilePost(action, base64, mimeType, fileName, nama, prefix) {
   const body = JSON.stringify({ action, base64, mimeType, fileName, nama: nama||'', prefix: prefix||'' });
   const res  = await fetch(API, {
-    method:  'POST',
-    headers: { 'Content-Type': 'text/plain' },
+    method:   'POST',
+    headers:  { 'Content-Type': 'text/plain' },
     body,
+    redirect: 'follow',
+    mode:     'cors',
+    cache:    'no-cache'
   });
   if (!res.ok) throw new Error('Server error HTTP ' + res.status);
   const json = await res.json();
@@ -1365,7 +1368,12 @@ async function callAPI(params) {
     })
     .join('&');
   const url = `${API}?${qs}&_cb=${Date.now()}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    method: 'GET',
+    redirect: 'follow',
+    mode: 'cors',
+    cache: 'no-cache'
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
