@@ -2,11 +2,11 @@
   "name": "Dashboard DPK PPNI RSU Surya Husadha Nusa Dua",
   "short_name": "DPK PPNI SHND",
   "description": "Dashboard Administrasi Keperawatan DPK PPNI RSU SHND",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/Dashboard-DPK-PPNI-RSU-SHND/",
+  "scope": "/Dashboard-DPK-PPNI-RSU-SHND/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#f0f4f8",
+  "background_color": "#fdf5f5",
   "theme_color": "#B71C1C",
   "lang": "id",
   "icons": [
@@ -23,6 +23,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["medical", "productivity"],
+  "categories": [
+    "medical",
+    "productivity"
+  ],
   "prefer_related_applications": false
 }
