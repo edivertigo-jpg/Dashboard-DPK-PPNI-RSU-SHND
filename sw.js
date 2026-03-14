@@ -1,7 +1,4 @@
-// ============================================================
-//  SERVICE WORKER — Dashboard DPK PPNI RSU SHND
-// ============================================================
-const CACHE_NAME = 'dpk-ppni-shnd-v4';
+const CACHE_NAME = 'dpk-ppni-shnd-v5';
 
 const CACHE_ASSETS = [
   '/Dashboard-DPK-PPNI-RSU-SHND/',
