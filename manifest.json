@@ -4,10 +4,16 @@
   "description": "Dashboard Administrasi Keperawatan DPK PPNI RSU SHND",
   "start_url": "./Dashboard_DPK_PPNI_SHND.html",
   "display": "standalone",
-  "background_color": "#fdf5f5",
+  "background_color": "#B71C1C",
   "theme_color": "#B71C1C",
   "orientation": "any",
   "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
