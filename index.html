@@ -1301,8 +1301,8 @@ function openDetail(idx) {
 
   document.getElementById('detailFoot').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal('modalDetail')">Tutup</button>
-    <button class="btn btn-amber" onclick="openEdit(${r.no})">✏️ Edit</button>
-    <button class="btn btn-rose"  onclick="confirmDelete(${r.no})">🗑️ Hapus</button>
+    <button class="btn btn-amber" onclick="openEdit(${r._idx})">✏️ Edit</button>
+    <button class="btn btn-rose"  onclick="confirmDelete(${r._idx})">🗑️ Hapus</button>
   `;
 
   openModal('modalDetail');
